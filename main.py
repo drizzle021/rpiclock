@@ -8,7 +8,8 @@ FB_PATH = "/dev/fb1"
 
 SCREENS = [
     {"render": render_clock, "duration": 10, "refresh": 1},
-    {"render": render_weather, "duration": 10, "refresh": 10}
+    {"render": render_weather, "duration": 10, "refresh": 10},
+    # {"render": render_nba, "duration": 10, "refresh": 10}
 ]
 
 
