@@ -23,6 +23,7 @@ def kelvin_to_celsius(k): return round(k - 273.15)
 def get_today_weather(lat, lon):
     today = datetime.now().strftime("%d.%m.%Y")
     cache_path = os.path.join(CACHE_DIR, f"weather_{today}.json")
+    data = None
 
     if os.path.exists(cache_path):
         with open(cache_path, "r") as f:
@@ -31,14 +32,16 @@ def get_today_weather(lat, lon):
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={OWM_API_KEY}"
         r = requests.get(url, timeout=8)
         data = r.json()
-        with open(cache_path, "w") as f:
-            json.dump(data, f)
+        if r.status_code == 200:
+            with open(cache_path, "w") as f:
+                json.dump(data, f)
 
-    temp = kelvin_to_celsius(data["main"]["temp"])
-    temp_min = kelvin_to_celsius(data["main"]["temp_min"])
-    temp_max = kelvin_to_celsius(data["main"]["temp_max"])
-    condition = data["weather"][0]["description"].title()
-    return condition, temp, temp_min, temp_max
+    if data:
+        temp = kelvin_to_celsius(data["main"]["temp"])
+        temp_min = kelvin_to_celsius(data["main"]["temp_min"])
+        temp_max = kelvin_to_celsius(data["main"]["temp_max"])
+        condition = data["weather"][0]["description"].title()
+        return condition, temp, temp_min, temp_max
 
 ICON_MAP = {
     "Clear": "clear.png",
@@ -80,7 +83,7 @@ def render_weather():
         font_path = r"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
         font_medium = ImageFont.truetype(font_path, 24)
         font_large  = ImageFont.truetype(font_path, 48)
-    except OSError:
+    except IOError:
         font_medium = ImageFont.load_default()
         font_large  = ImageFont.load_default()
 
