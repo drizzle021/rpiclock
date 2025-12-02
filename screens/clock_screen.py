@@ -35,15 +35,3 @@ def render_clock():
               date_str, font=font_small, fill="#c379e8")
 
     return image
-
-def update_framebuffer(image):
-    arr = np.array(image.convert("RGB"), dtype=np.uint8)
-    r = (arr[:,:,0] >> 3).astype(np.uint16)
-    g = (arr[:,:,1] >> 2).astype(np.uint16)
-    b = (arr[:,:,2] >> 3).astype(np.uint16)
-    rgb565 = (r << 11) | (g << 5) | b
-
-    with open(FB_DEVICE, "wb") as f:
-        f.seek(0)
-        f.write(rgb565.astype("uint16").tobytes())
-
